@@ -1,0 +1,11 @@
+{
+  "model": "RTMPose-s body7 COCO 17 keypoints",
+  "source": "https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/onnx_sdk/rtmpose-s_simcc-body7_pt-body7_420e-256x192-acd4a1ef_20230504.zip",
+  "sha256": "9aeb635b83f86aea45cf45d85798f7eba1a162de8e0d721c44e54fe5eebaf47d",
+  "license": "Apache-2.0",
+  "rtmlib": "0.0.16",
+  "onnxruntime": "1.24.4",
+  "inputSize": [192, 256],
+  "device": "cpu",
+  "detector": "whole_image"
+}

@@ -1,0 +1,193 @@
+@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  [data-border-glow],
+  .glass-card,
+  .luma-quick-cut-panel,
+  .luma-quick-cut-control-panel,
+  .luma-settings-page section.rounded-lg.border,
+  .luma-settings-page div.rounded-lg.border,
+  .luma-settings-page div.rounded-xl.border,
+  .luma-settings-page [data-slot="card"] {
+    --border-glow-angle: 45deg;
+    --border-glow-edge: 0;
+    --border-glow-opacity: 0;
+    --border-glow-radius: inherit;
+    --border-glow-x: 50%;
+    --border-glow-y: 50%;
+    --border-glow-edge-x: 50%;
+    --border-glow-edge-y: 0%;
+    --border-glow-hot: #fff8dd;
+    --border-glow-accent-a: #6ee7ff;
+    --border-glow-accent-b: #a78bfa;
+    --border-glow-accent-c: #f6c46b;
+    position: relative;
+    isolation: isolate;
+  }
+
+  [data-border-glow]::before,
+  .glass-card::before,
+  .luma-quick-cut-panel::before,
+  .luma-quick-cut-control-panel::before,
+  .luma-settings-page section.rounded-lg.border::before,
+  .luma-settings-page div.rounded-lg.border::before,
+  .luma-settings-page div.rounded-xl.border::before,
+  .luma-settings-page [data-slot="card"]::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    padding: 1px;
+    border-radius: var(--border-glow-radius, inherit);
+    background:
+      radial-gradient(
+        116px circle at var(--border-glow-edge-x) var(--border-glow-edge-y),
+        var(--border-glow-hot) 0 7%,
+        var(--border-glow-accent-a) 11%,
+        var(--border-glow-accent-b) 34%,
+        rgba(246, 196, 107, 0.62) 52%,
+        transparent 74%
+      );
+    opacity: 0;
+    transition: opacity 0.14s ease, filter 0.14s ease;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+  }
+
+  [data-border-glow]::after,
+  .glass-card::after,
+  .luma-settings-page section.rounded-lg.border::after,
+  .luma-settings-page div.rounded-lg.border::after,
+  .luma-settings-page div.rounded-xl.border::after,
+  .luma-settings-page [data-slot="card"]::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: -26px;
+    z-index: 3;
+    border-radius: var(--border-glow-radius, inherit);
+    opacity: 0;
+    background:
+      radial-gradient(
+        140px circle at calc(var(--border-glow-edge-x) + 26px) calc(var(--border-glow-edge-y) + 26px),
+        rgba(255, 248, 221, 0.34) 0 8%,
+        rgba(110, 231, 255, 0.22) 24%,
+        rgba(167, 139, 250, 0.16) 44%,
+        transparent 72%
+      );
+    mix-blend-mode: screen;
+    filter: blur(9px);
+    transition: opacity 0.16s ease;
+  }
+
+  /* Quick cut uses a masked tracing layer, not the global outer halo. */
+  .luma-quick-cut-panel::after,
+  .luma-quick-cut-control-panel::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    padding: 1px;
+    border-radius: var(--border-glow-radius, inherit);
+    background: conic-gradient(from var(--luma-quick-cut-edge-angle), transparent 0deg 278deg, rgba(103, 232, 249, 0.18) 303deg, rgba(219, 253, 255, 0.94) 326deg, rgba(167, 139, 250, 0.5) 340deg, rgba(103, 232, 249, 0.2) 354deg, transparent 360deg);
+    opacity: 1 !important;
+    filter: drop-shadow(0 0 4px rgba(103, 232, 249, 0.34));
+    animation: luma-quick-cut-edge-trace 8s linear infinite;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+  }
+
+  .luma-quick-cut-source-bar::after,
+  .luma-quick-cut-asset::after,
+  .luma-quick-cut-stepper::after,
+  .luma-quick-cut-segment::after,
+  .luma-quick-cut-range::after,
+  .luma-quick-cut-checkbox::after,
+  .luma-quick-cut-readiness::after,
+  .luma-quick-cut-stat::after,
+  .luma-quick-cut-fact::after,
+  .luma-quick-cut-result:not(.is-error)::after,
+  .luma-quick-cut-log::after,
+  .luma-quick-cut-processing-path::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    padding: 1px;
+    border-radius: inherit;
+    background: conic-gradient(from var(--luma-quick-cut-edge-angle), transparent 0deg 298deg, rgba(103, 232, 249, 0.12) 320deg, rgba(219, 253, 255, 0.58) 338deg, rgba(167, 139, 250, 0.28) 350deg, transparent 360deg);
+    opacity: 0.72;
+    filter: drop-shadow(0 0 2px rgba(103, 232, 249, 0.2));
+    animation: luma-quick-cut-edge-trace 12s linear infinite;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+  }
+
+  [data-border-glow-active="true"]::before {
+    opacity: clamp(0, calc((var(--border-glow-edge) - 22) / 62), 1) !important;
+    filter:
+      drop-shadow(0 0 5px rgba(255, 248, 221, 0.45))
+      drop-shadow(0 0 11px rgba(110, 231, 255, 0.34))
+      drop-shadow(0 0 18px rgba(167, 139, 250, 0.18));
+  }
+
+  [data-border-glow-active="true"]::after {
+    opacity: clamp(0, calc((var(--border-glow-edge) - 35) / 72), 0.52) !important;
+  }
+
+  .luma-workspace-shell [data-border-glow-active="true"],
+  .luma-workspace-shell .glass-card[data-border-glow-active="true"] {
+    box-shadow: var(--luma-existing-shadow, 0 24px 90px rgba(0, 0, 0, 0.22)) !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse), (max-width: 767px) {
+  [data-border-glow]::before,
+  [data-border-glow]::after,
+  .glass-card::before,
+  .glass-card::after,
+  .luma-quick-cut-panel::before,
+  .luma-quick-cut-panel::after,
+  .luma-quick-cut-control-panel::before,
+  .luma-quick-cut-control-panel::after {
+    content: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .luma-quick-cut-panel::after,
+  .luma-quick-cut-control-panel::after,
+  .luma-quick-cut-source-bar::after,
+  .luma-quick-cut-asset::after,
+  .luma-quick-cut-stepper::after,
+  .luma-quick-cut-segment::after,
+  .luma-quick-cut-range::after,
+  .luma-quick-cut-checkbox::after,
+  .luma-quick-cut-readiness::after,
+  .luma-quick-cut-stat::after,
+  .luma-quick-cut-fact::after,
+  .luma-quick-cut-result:not(.is-error)::after,
+  .luma-quick-cut-log::after,
+  .luma-quick-cut-processing-path::after {
+    animation: none !important;
+  }
+}

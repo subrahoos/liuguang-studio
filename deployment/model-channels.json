@@ -1,0 +1,317 @@
+{
+  "version": 1,
+  "channels": [
+    {
+      "id": "llm-default",
+      "kind": "llm",
+      "provider_key": "openai",
+      "name": "LLM",
+      "enabled": 1,
+      "base_url": "https://api.zzbei.cc/v1",
+      "model": "gpt-5.6-sol",
+      "config": {
+        "visionModel": "gpt-5.6-sol"
+      },
+      "sort_order": 0
+    },
+    {
+      "id": "image-1783064496808",
+      "kind": "image",
+      "provider_key": "openai-seedance",
+      "name": "image4k",
+      "enabled": 1,
+      "base_url": "https://api.mikoto.vip/v1",
+      "model": "gpt-image-2",
+      "config": {
+        "endpointPath": "/images/edits",
+        "requestTimeoutMs": 1800000
+      },
+      "sort_order": 100
+    },
+    {
+      "id": "video-1784805480147",
+      "kind": "video",
+      "provider_key": "openai-seedance",
+      "name": "rjm-Grok多参",
+      "enabled": 0,
+      "base_url": "https://video.rjm.us.ci/v1",
+      "model": "grok-imagine-video",
+      "config": {
+        "taskTypes": [
+          "shot_clip",
+          "full_video"
+        ],
+        "submitPath": "/videos/generations",
+        "statusPath": "/videos/tasks/{id}",
+        "contentPath": "/videos/{id}/content",
+        "durationOptions": [
+          10
+        ],
+        "maxReferenceImages": 7,
+        "directVideoReplacementPromptLanguage": "en",
+        "directVideoReplacementSceneOptional": false,
+        "directVideoReplacementFaceOptional": false,
+        "directVideoReplacementReferenceContract": "product_board_face_model",
+        "directVideoReplacementPromptVersion": "v1"
+      },
+      "sort_order": 200
+    },
+    {
+      "id": "video-1785080144104",
+      "kind": "video",
+      "provider_key": "openai-seedance",
+      "name": "rim-sd多参",
+      "enabled": 1,
+      "base_url": "https://video.rjm.us.ci/v1",
+      "model": "video-ds-2.0",
+      "config": {
+        "taskTypes": [
+          "shot_clip",
+          "full_video"
+        ],
+        "submitPath": "/videos",
+        "statusPath": "/videos/{id}",
+        "contentPath": "/videos/{id}/content",
+        "durationOptions": [
+          15
+        ],
+        "maxReferenceImages": 4,
+        "maxReferenceVideos": 3,
+        "maxReferenceAudios": 1,
+        "directVideoReplacementPromptLanguage": "en",
+        "directVideoReplacementSceneOptional": true,
+        "directVideoReplacementFaceOptional": false,
+        "directVideoReplacementReferenceContract": "product_front_face",
+        "directVideoReplacementPromptVersion": "v1"
+      },
+      "sort_order": 201
+    },
+    {
+      "id": "video-1785728661724",
+      "kind": "video",
+      "provider_key": "openai-seedance",
+      "name": "lgy-sd多参",
+      "enabled": 1,
+      "base_url": "https://www.lingganyaapi.com/v1",
+      "model": "sd-2.0-T",
+      "config": {
+        "taskTypes": [
+          "shot_clip",
+          "full_video"
+        ],
+        "submitPath": "/videos",
+        "statusPath": "/videos/{id}",
+        "contentPath": "/videos/{id}/content",
+        "durationOptions": [
+          10,
+          15
+        ],
+        "maxReferenceImages": 4,
+        "maxReferenceVideos": 1,
+        "maxReferenceAudios": 1,
+        "directVideoReplacementPromptLanguage": "zh-CN",
+        "directVideoReplacementSceneOptional": true,
+        "directVideoReplacementFaceOptional": true,
+        "directVideoReplacementReferenceContract": "product_front_face",
+        "directVideoReplacementPromptVersion": "v1"
+      },
+      "sort_order": 202
+    },
+    {
+      "id": "video-1785754833887",
+      "kind": "video",
+      "provider_key": "openai-seedance",
+      "name": "lgy-sd多参SS",
+      "enabled": 1,
+      "base_url": "https://www.lingganyaapi.com/v1",
+      "model": "sd-2.0-vip",
+      "config": {
+        "taskTypes": [
+          "shot_clip",
+          "full_video"
+        ],
+        "submitPath": "/videos",
+        "statusPath": "/videos/{id}",
+        "contentPath": "/videos/{id}/content",
+        "durationOptions": [
+          10,
+          15
+        ],
+        "maxReferenceImages": 4,
+        "maxReferenceVideos": 1,
+        "maxReferenceAudios": 1,
+        "directVideoReplacementPromptLanguage": "zh-CN",
+        "directVideoReplacementSceneOptional": true,
+        "directVideoReplacementFaceOptional": true,
+        "directVideoReplacementReferenceContract": "product_front_face",
+        "directVideoReplacementPromptVersion": "v2"
+      },
+      "sort_order": 203
+    },
+    {
+      "id": "video-1786422668094",
+      "kind": "video",
+      "provider_key": "openai-seedance",
+      "name": "MKOSD",
+      "enabled": 1,
+      "base_url": "https://api.mikoto.vip",
+      "model": "seedance-2.0-1080p",
+      "config": {
+        "videoProtocol": "mikoto",
+        "taskTypes": [
+          "shot_clip",
+          "full_video"
+        ],
+        "submitPath": "/videos",
+        "statusPath": "/videos/{id}",
+        "contentPath": "/videos/{id}/content",
+        "durationOptions": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "maxReferenceImages": 9,
+        "maxReferenceVideos": 3,
+        "maxReferenceAudios": 3,
+        "directVideoReplacementPromptLanguage": "zh-CN",
+        "directVideoReplacementSceneOptional": true,
+        "directVideoReplacementFaceOptional": true,
+        "directVideoReplacementReferenceContract": "product_front_face",
+        "directVideoReplacementPromptVersion": "v1"
+      },
+      "sort_order": 204
+    },
+    {
+      "id": "video-1786422668471",
+      "kind": "video",
+      "provider_key": "openai-seedance",
+      "name": "MKOSOR",
+      "enabled": 1,
+      "base_url": "https://api.mikoto.vip",
+      "model": "sora-v3-pro",
+      "config": {
+        "videoProtocol": "mikoto_sora",
+        "taskTypes": [
+          "shot_clip",
+          "full_video"
+        ],
+        "submitPath": "/videos",
+        "statusPath": "/videos/{id}",
+        "contentPath": "/videos/{id}/content",
+        "durationOptions": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "maxReferenceImages": 9,
+        "maxReferenceVideos": 3,
+        "maxReferenceAudios": 3,
+        "directVideoReplacementPromptLanguage": "en",
+        "directVideoReplacementSceneOptional": true,
+        "directVideoReplacementFaceOptional": false,
+        "directVideoReplacementReferenceContract": "product_front_face",
+        "directVideoReplacementPromptVersion": "v1"
+      },
+      "sort_order": 205
+    },
+    {
+      "id": "video-1789573401654",
+      "kind": "video",
+      "provider_key": "openai-seedance",
+      "name": "lgy-sd2.0-g",
+      "enabled": 1,
+      "base_url": "https://www.lingganyaapi.com/v1",
+      "model": "sd-2.0-g",
+      "config": {
+        "taskTypes": [
+          "shot_clip",
+          "full_video"
+        ],
+        "submitPath": "/videos",
+        "statusPath": "/videos/{id}",
+        "contentPath": "/videos/{id}/content",
+        "durationOptions": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "maxReferenceImages": 9,
+        "maxReferenceVideos": 3,
+        "maxReferenceAudios": 3,
+        "directVideoReplacementPromptLanguage": "zh-CN",
+        "directVideoReplacementSceneOptional": true,
+        "directVideoReplacementFaceOptional": true,
+        "directVideoReplacementReferenceContract": "product_front_face",
+        "directVideoReplacementPromptVersion": "v2"
+      },
+      "sort_order": 206
+    },
+    {
+      "id": "video-1789577531384",
+      "kind": "video",
+      "provider_key": "openai-seedance",
+      "name": "lgy-sd2.0-mini",
+      "enabled": 1,
+      "base_url": "https://www.lingganyaapi.com/v1",
+      "model": "sd-2.0-mini",
+      "config": {
+        "taskTypes": [
+          "shot_clip",
+          "full_video"
+        ],
+        "submitPath": "/videos",
+        "statusPath": "/videos/{id}",
+        "contentPath": "/videos/{id}/content",
+        "durationOptions": [
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "directVideoReplacementPromptLanguage": "zh-CN",
+        "directVideoReplacementSceneOptional": true,
+        "directVideoReplacementFaceOptional": true,
+        "directVideoReplacementReferenceContract": "product_front_face",
+        "directVideoReplacementPromptVersion": "v1",
+        "maxReferenceImages": 6,
+        "maxReferenceVideos": 3,
+        "maxReferenceAudios": 3
+      },
+      "sort_order": 207
+    }
+  ]
+}
