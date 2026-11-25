@@ -15,6 +15,7 @@ function initializeDatabase({ dataRoot, adminPassword, seedChannels = true }) {
       if (!adminPassword || adminPassword.length < 12) throw new Error("首次安装请设置至少 12 位管理员密码");
       db.transaction(() => {
         db.exec(fs.readFileSync(path.join(__dirname, "../deployment/schema.sql"), "utf8").replace(/^\uFEFF/, ""));
+        db.exec(fs.readFileSync(path.join(__dirname, "../deployment/board-store-schema.sql"), "utf8"));
         const salt = crypto.randomBytes(16).toString("hex");
         const hash = crypto.pbkdf2Sync(adminPassword, salt, 210000, 32, "sha256").toString("hex");
         const now = Date.now();
