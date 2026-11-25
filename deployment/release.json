@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "tag": "windows-runtime-20261126",
+  "repository": "subrahoos/liuguang-studio",
+  "platform": "win32-x64",
+  "githubCli": {
+    "url": "https://github.com/cli/cli/releases/download/v2.105.0/gh_2.105.0_windows_amd64.zip",
+    "sha256": "8813a72c899900afaa10e3fec8fbc64b908c89dbfe837e95ed2fa500fc140627"
+  },
+  "archives": [
+    {
+      "name": "runtime-windows-x64.zip",
+      "target": "runtime",
+      "size": 2742129669,
+      "sha256": "409e9fcc9e10af0295b1e09dad449713f0ddb7fb4b243b587a00366802753452",
+      "parts": [
+        {
+          "name": "runtime-windows-x64.zip.part01",
+          "size": 268435456,
+          "sha256": "d2b6357121ab58a7f1a9195d4e8adc781f72104f95aa2f892660b4233fa469a2"
+        },
+        {
+          "name": "runtime-windows-x64.zip.part02",
+          "size": 268435456,
+          "sha256": "9f19420f3e11c1a2642153044ffae88929cd5bd1709230d3d4c4aeb6c4f12fd7"
+        },
+        {
+          "name": "runtime-windows-x64.zip.part03",
+          "size": 268435456,
+          "sha256": "ae50087d86e2948e1767a686af3100b2cf9a9bd865cc3e2b10df01bb62697000"
+        },
+        {
+          "name": "runtime-windows-x64.zip.part04",
+          "size": 268435456,
+          "sha256": "ee86c08a710dab96f016993389d7523a5f6f309d6832dd7cc8dde27384f4f9a3"
+        },
+        {
+          "name": "runtime-windows-x64.zip.part05",
+          "size": 268435456,
+          "sha256": "f5fb7f99972a9352bef0f0013a73d945bc7f3318bc860b4a4652cf4bb26a3fff"
+        },
+        {
+          "name": "runtime-windows-x64.zip.part06",
+          "size": 268435456,
+          "sha256": "1eeae6e6f58557a6df59f5f0b05d80ac4c7d61dd4cf765ab342de2c2af98f470"
+        },
+        {
+          "name": "runtime-windows-x64.zip.part07",
+          "size": 268435456,
+          "sha256": "05d9ec7b594ce4a9e88b7711d4142c2ed332b3588764da718527ebcea22c4219"
+        },
+        {
+          "name": "runtime-windows-x64.zip.part08",
+          "size": 268435456,
+          "sha256": "bfa11a2e5a759bdbd10e3dfab421cd6040f68f50b08d72fd681f6cf5149b807d"
+        },
+        {
+          "name": "runtime-windows-x64.zip.part09",
+          "size": 268435456,
+          "sha256": "2a95f900cf0a06f7ab77aaf6e7a48b0e7e4ffcd44b17273023deedd3728022a1"
+        },
+        {
+          "name": "runtime-windows-x64.zip.part10",
+          "size": 268435456,
+          "sha256": "b92105276fb31674d17ec558ecdd9e39321a1304699a236344c8153947c90808"
+        },
+        {
+          "name": "runtime-windows-x64.zip.part11",
+          "size": 57775109,
+          "sha256": "1d9e69f8d445d61cea8dc4d7797c5b71c638d91d2696df263c6e025bf2fcc94c"
+        }
+      ]
+    },
+    {
+      "name": "dependencies-windows-x64.zip",
+      "target": "application",
+      "size": 233434061,
+      "sha256": "13754c7cf6327b7e4a8e0fe7b3db508a117e939a301246040a57b594a0c728ef",
+      "parts": [
+        {
+          "name": "dependencies-windows-x64.zip.part01",
+          "size": 233434061,
+          "sha256": "13754c7cf6327b7e4a8e0fe7b3db508a117e939a301246040a57b594a0c728ef"
+        }
+      ]
+    }
+  ]
+}
