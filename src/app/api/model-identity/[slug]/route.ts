@@ -1,4 +1,4 @@
-import { storagePaths } from "@/lib/storage-root";
+import { legacyIdentityReferenceRoot } from "@/lib/runtime-tools";
 import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "fs/promises";
 import { join } from "path";
@@ -6,9 +6,7 @@ import { handleAuthRouteError, requireUser } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
-const IDENTITY_PACK_DIR =
-  process.env.MODEL_IDENTITY_PACK_DIR ||
-  storagePaths.identityPack("legacy-references");
+const IDENTITY_PACK_DIR = legacyIdentityReferenceRoot();
 
 const IDENTITY_FILES: Record<string, string> = {
   "main-model-v2.png": "白底棚拍运动服模特-参考脸型身材-4K-v2.png",

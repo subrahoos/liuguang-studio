@@ -1,4 +1,4 @@
-import { mediaExecutable } from "@/lib/runtime-tools";
+import { legacyIdentityReferenceRoot, mediaExecutable } from "@/lib/runtime-tools";
 import { randomUUID } from "crypto";
 import { execFile } from "child_process";
 import { mkdir, readFile, stat, unlink } from "fs/promises";
@@ -27,9 +27,7 @@ interface PrepareReferenceOptions {
   ownerId?: string;
 }
 
-const MODEL_IDENTITY_PACK_DIR =
-  process.env.MODEL_IDENTITY_PACK_DIR ||
-  storagePaths.identityPack("legacy-references");
+const MODEL_IDENTITY_PACK_DIR = legacyIdentityReferenceRoot();
 
 const MODEL_IDENTITY_FILES: Record<string, string> = {
   "main-model-v2.png": "白底棚拍运动服模特-参考脸型身材-4K-v2.png",

@@ -4,6 +4,7 @@ import { basename, extname, join, resolve } from "path";
 import { ADMIN_USER_ID } from "@/lib/auth-constants";
 import { identityPerformanceBaselineText, identityPhysicalLockText } from "@/lib/identity-performance";
 import { storagePaths } from "@/lib/storage-root";
+import { legacyIdentityReferenceRoot } from "@/lib/runtime-tools";
 
 export type IdentityReferenceStatus = "draft" | "approved" | "archived";
 export type IdentityReferenceGroup = "source" | "base" | "camera" | "expression";
@@ -487,8 +488,10 @@ export async function getIdentityLibrary(ownerId: string): Promise<IdentityLibra
     }
   }
 
+  const legacyReferences = ownerId === ADMIN_USER_ID ? await readLegacyGeneratedReferences() : [];
+  const hasLegacySource = existsSync(join(legacyIdentityReferenceRoot(), "白底棚拍运动服模特-参考脸型身材-4K-v2.png"));
   const library: IdentityLibrary = {
-    packs: ownerId === ADMIN_USER_ID ? [createLegacyPack(await readLegacyGeneratedReferences())] : [],
+    packs: ownerId === ADMIN_USER_ID && (hasLegacySource || legacyReferences.length > 0) ? [createLegacyPack(legacyReferences)] : [],
   };
   await writeIdentityLibrary(ownerId, library);
   return library;

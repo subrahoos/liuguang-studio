@@ -1,5 +1,6 @@
 import { existsSync } from "fs";
 import path from "path";
+import { storagePaths } from "@/lib/storage-root";
 
 /** Runtime binaries are shipped with the repository's Windows release. */
 export function localRuntimeRoot() {
@@ -34,4 +35,11 @@ export function chineseFontFile() {
     path.join(process.cwd(), "runtime-assets", "fonts", "NotoSansSC.ttf"),
     path.join(process.env.SystemRoot || "C:\\Windows", "Fonts", "msyh.ttc"),
   ].find((candidate): candidate is string => Boolean(candidate && existsSync(candidate))) || "";
+}
+
+export function legacyIdentityReferenceRoot() {
+  const configured = process.env.MODEL_IDENTITY_PACK_DIR?.trim();
+  if (configured) return configured;
+  const legacy = "C:\\Users\\应钟\\Documents\\Obsidian Vault\\50_资源\\模特身份参考包";
+  return existsSync(legacy) ? legacy : storagePaths.identityPack("legacy-references");
 }

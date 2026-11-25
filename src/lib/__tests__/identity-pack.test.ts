@@ -24,13 +24,14 @@ import {
 } from "@/lib/identity-pack";
 import { composeIdentityAuxiliaryAsset } from "@/lib/identity-auxiliary-assets";
 import { storagePaths } from "@/lib/storage-root";
+import { mediaExecutable } from "@/lib/runtime-tools";
 
 const ownerId = `identity-pack-test-${Date.now()}-${Math.floor(Math.random() * 1_000_000_000)}`;
 const otherOwnerId = `${ownerId}-another-user`;
 const ownerDir = storagePaths.identityPack(ownerId);
 const otherOwnerDir = storagePaths.identityPack(otherOwnerId);
 const execFileAsync = promisify(execFile);
-const ffmpegPath = "D:\\Tools\\ffmpeg\\bin\\ffmpeg.exe";
+const ffmpegPath = mediaExecutable("ffmpeg");
 
 async function writeFixturePng(filePath: string) {
   await execFileAsync(ffmpegPath, ["-y", "-f", "lavfi", "-i", "color=c=0xD8D0C8:s=64x96", "-frames:v", "1", filePath], { windowsHide: true });

@@ -34,6 +34,8 @@ function initializeDatabase({ dataRoot, adminPassword, seedChannels = true }) {
       if (hasCredentials) throw new Error("数据库已有加密凭证但缺少本机主密钥，请恢复原密钥后启动");
       fs.writeFileSync(keyFile, crypto.randomBytes(32).toString("base64"), { flag: "wx", mode: 0o600 });
     }
+    const watermarkKeyFile = path.join(system, "metadata-watermark.key");
+    if (!fs.existsSync(watermarkKeyFile)) fs.writeFileSync(watermarkKeyFile, crypto.randomBytes(32).toString("hex"), { flag: "wx", mode: 0o600 });
     db.pragma("foreign_keys = ON");
     if (db.pragma("foreign_key_check").length) throw new Error("Database foreign-key check failed");
     return { created: empty, tables: db.prepare("SELECT count(*) AS n FROM sqlite_master WHERE type='table'").get().n };
