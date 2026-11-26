@@ -1,7 +1,6 @@
 import { localRuntimeRoot } from "@/lib/runtime-tools";
 import { existsSync } from "fs";
 import path from "path";
-import { createRequire } from "module";
 import { storagePaths } from "@/lib/storage-root";
 
 let cachedRuntime: unknown;
@@ -49,7 +48,10 @@ export function loadQuickCutOnnxRuntime() {
   if (!existsSync(packageFile)) {
     throw new Error("流光快剪的人物检测运行库缺失，请重新迁移本地运行资源。");
   }
-  const runtimeRequire = createRequire(path.join(runtime, "runtime-loader.cjs"));
+  // Resolve the native runtime from its installation directory at execution time.
+  // Webpack rewrites an imported createRequire with a dynamic filename into a
+  // context require, which cannot load this separately shipped native module.
+  const runtimeRequire = process.getBuiltinModule("module").createRequire(path.join(runtime, "runtime-loader.cjs"));
   cachedRuntime = runtimeRequire("onnxruntime-node");
   return cachedRuntime;
 }
