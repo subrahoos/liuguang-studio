@@ -41,5 +41,6 @@ export function legacyIdentityReferenceRoot() {
   const configured = process.env.MODEL_IDENTITY_PACK_DIR?.trim();
   if (configured) return configured;
   const legacy = "C:\\Users\\应钟\\Documents\\Obsidian Vault\\50_资源\\模特身份参考包";
-  return existsSync(legacy) ? legacy : storagePaths.identityPack("legacy-references");
+  const originalInstallation = path.resolve(storagePaths.root()).toLowerCase() === path.resolve("D:\\3100").toLowerCase();
+  return originalInstallation && existsSync(legacy) ? legacy : storagePaths.identityPack("legacy-references");
 }
