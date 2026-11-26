@@ -81,6 +81,8 @@ function projectFolderName(project: ArchiveProjectInfo) {
 }
 
 function legacyProjectRootCandidates(project: ArchiveProjectInfo) {
+  // Name-only archives predate accounts and belong to the original administrator.
+  if (project.ownerId !== ADMIN_USER_ID) return [];
   const names = [
     projectFolderName(project),
     cleanText(project.name),

@@ -1,0 +1,20 @@
+# Optional future deployment. Replace the domain and configure the application
+# with publicOrigins=https://studio.example.com, secureCookies=true, trustProxy=true.
+# Keep Node bound to 127.0.0.1. Do not add a file_server rooted at this repository.
+studio.example.com {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:3100 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-Host {host}
+        header_up X-Forwarded-Proto https
+        header_up -Forwarded
+        flush_interval -1
+        transport http {
+            read_timeout 0
+            write_timeout 0
+        }
+    }
+    # Caddy does not cache private API responses. Keep CDN/proxy caching disabled
+    # for /api/* and authenticated pages; preserve cookies, Range and streaming.
+}

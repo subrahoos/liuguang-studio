@@ -12,6 +12,7 @@ export async function POST(req: NextRequest, { params }: Params) {
   const { id } = await params;
   const access = await getOwnedProductProductionAccess(req, id);
   if (!access) return NextResponse.json({ error: "任务不存在或无权访问。" }, { status: 404 });
+  if (access.user.role !== "admin") return NextResponse.json({ error: "服务器桌面操作仅限管理员，请下载自己的结果文件。" }, { status: 403 });
 
   try {
     const directory = productProductionOutputDirectory(access.user.id, id);

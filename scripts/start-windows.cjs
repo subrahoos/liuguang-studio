@@ -7,6 +7,9 @@ const config = JSON.parse(fs.readFileSync(path.join(root,".local/config.json"),"
 const key = fs.readFileSync(path.join(config.dataRoot,"system/model-credential-encryption.key"),"utf8").trim();
 if (Buffer.from(key,"base64").length !== 32) throw new Error("Invalid local credential key");
 const env = {...process.env,LUMA_DATA_ROOT:config.dataRoot,LUMA_RUNTIME_ROOT:config.runtimeRoot,LUMA_CREDENTIAL_ENCRYPTION_KEY:key,LUMA_SECURE_COOKIES:config.secureCookies?"1":"0",PYTHONUTF8:"1",NEXT_TELEMETRY_DISABLED:"1"};
+env.PORT = String(config.port || 3100);
+if (config.publicOrigins) env.LUMA_PUBLIC_ORIGINS = String(config.publicOrigins);
+env.LUMA_TRUST_PROXY = config.trustProxy === true ? "1" : "0";
 if(config.proxyUrl) Object.assign(env,{HTTP_PROXY:config.proxyUrl,HTTPS_PROXY:config.proxyUrl,NODE_USE_ENV_PROXY:"1",NO_PROXY:"localhost,127.0.0.1,::1"});
 console.log(`流光商影: http://127.0.0.1:${config.port || 3100}`);
 console.log(`本机数据: ${config.dataRoot}`);

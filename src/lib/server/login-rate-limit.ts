@@ -1,45 +1,40 @@
 import "server-only";
-
-type AttemptWindow = {
-  count: number;
-  resetAt: number;
-};
+import { createHash } from "node:crypto";
+import { sqlite } from "@/lib/db";
 
 const WINDOW_MS = 15 * 60 * 1000;
-const MAX_ATTEMPTS = 8;
-const attempts = new Map<string, AttemptWindow>();
+sqlite.exec(`CREATE TABLE IF NOT EXISTS auth_rate_limits (
+  key TEXT PRIMARY KEY, count INTEGER NOT NULL, reset_at INTEGER NOT NULL
+)`);
 
-function cleanup(now: number) {
-  for (const [key, value] of attempts) {
-    if (value.resetAt <= now) attempts.delete(key);
-  }
+function accountKey(scope: string, identity: string) {
+  return `${scope}:account:${createHash("sha256").update(identity.trim().toLowerCase()).digest("hex")}`;
 }
 
-export function loginAttemptKey(ip: string, username: string) {
-  return `${ip || "unknown"}:${username.trim().toLowerCase()}`;
-}
-
-export function canAttemptLogin(key: string) {
+/** Reserve before password work; persistent counters survive a process restart. */
+export function consumeAuthAttempt(scope: "login" | "register", ip: string, identity: string) {
   const now = Date.now();
-  cleanup(now);
-  const value = attempts.get(key);
-  if (!value || value.resetAt <= now) return { allowed: true, retryAfterSeconds: 0 };
-  return {
-    allowed: value.count < MAX_ATTEMPTS,
-    retryAfterSeconds: Math.max(1, Math.ceil((value.resetAt - now) / 1000)),
-  };
+  const limits: Array<[string, number]> = [
+    [accountKey(scope, identity), 8],
+    [`${scope}:source:${ip}`, scope === "login" ? 100 : 30],
+    [`${scope}:global`, scope === "login" ? 400 : 100],
+  ];
+  return sqlite.transaction(() => {
+    sqlite.prepare("DELETE FROM auth_rate_limits WHERE reset_at <= ?").run(now);
+    const get = sqlite.prepare("SELECT count, reset_at FROM auth_rate_limits WHERE key = ?");
+    for (const [key, maximum] of limits) {
+      const row = get.get(key) as { count: number; reset_at: number } | undefined;
+      if (row && row.count >= maximum) return {
+        allowed: false, retryAfterSeconds: Math.max(1, Math.ceil((row.reset_at - now) / 1000)),
+      };
+    }
+    const insert = sqlite.prepare(`INSERT INTO auth_rate_limits (key, count, reset_at) VALUES (?, 1, ?)
+      ON CONFLICT(key) DO UPDATE SET count = count + 1`);
+    for (const [key] of limits) insert.run(key, now + WINDOW_MS);
+    return { allowed: true, retryAfterSeconds: 0 };
+  }).immediate();
 }
 
-export function recordFailedLogin(key: string) {
-  const now = Date.now();
-  const existing = attempts.get(key);
-  if (!existing || existing.resetAt <= now) {
-    attempts.set(key, { count: 1, resetAt: now + WINDOW_MS });
-    return;
-  }
-  attempts.set(key, { ...existing, count: existing.count + 1 });
-}
-
-export function clearFailedLogins(key: string) {
-  attempts.delete(key);
+export function clearSuccessfulLogin(identity: string) {
+  sqlite.prepare("DELETE FROM auth_rate_limits WHERE key = ?").run(accountKey("login", identity));
 }

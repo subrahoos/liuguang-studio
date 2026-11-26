@@ -674,17 +674,22 @@ export function mergeBoardNodesFromClientPatch(
     .filter((node) => !deletedNodeIds.has(node.id))
     .map((node) => ({
       ...node,
-      ...(node.filePath !== undefined ? { filePath: sanitizeFilePath(node.filePath) } : {}),
+      ...(node.filePath !== undefined ? {
+        // Server imports may legitimately reference this owner's identity pack
+        // outside the board directory. Preserve only an identical saved path.
+        filePath: node.filePath === currentById.get(node.id)?.filePath
+          ? currentById.get(node.id)?.filePath : sanitizeFilePath(node.filePath),
+      } : {}),
     }));
   const incomingIds = new Set(acceptedIncoming.map((node) => node.id));
   const mergedIncoming = acceptedIncoming.map((node) => {
     const saved = currentById.get(node.id);
-    if (!saved || !serverExecutionIsNewer(saved, node)) return node;
     return {
       ...node,
-      status: saved.status,
-      error: saved.error,
-      execution: saved.execution,
+      ...(saved && serverExecutionIsNewer(saved, node) ? { status: saved.status, error: saved.error } : {}),
+      // Task IDs, provider checkpoints and cleanup credentials are server-owned.
+      // Even a newly added browser node must not inject an upstream task handle.
+      execution: saved?.execution,
     };
   });
   const preserved = current.filter((node) => !incomingIds.has(node.id) && !deletedNodeIds.has(node.id));

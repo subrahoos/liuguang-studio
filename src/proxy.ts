@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AUTH_COOKIE_NAME } from "@/lib/auth-constants";
+import { isSensitivePath, trustedRequestOrigin, unsafeRequestReason } from "@/lib/request-security";
 
 const PROTECTED_PAGE_PREFIXES = [
   "/workspace",
@@ -12,10 +13,7 @@ const PROTECTED_PAGE_PREFIXES = [
   "/batch",
 ];
 
-const PUBLIC_API_PREFIXES = [
-  "/api/auth",
-  "/api/home-backgrounds",
-];
+const PUBLIC_APIS = new Set(["/api/auth/login", "/api/auth/register", "/api/auth/me", "/api/auth/logout"]);
 
 const LEGACY_WORKSPACE_MODULES: Record<string, string> = {
   "/products": "products",
@@ -33,9 +31,15 @@ function withSecurityHeaders(response: NextResponse, req: NextRequest) {
   response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
   response.headers.set("Cross-Origin-Resource-Policy", "same-origin");
-  const forwardedProto = req.headers.get("x-forwarded-proto")?.split(",")[0]?.trim().toLowerCase();
-  if (req.nextUrl.protocol === "https:" || forwardedProto === "https") {
-    response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  if (trustedRequestOrigin(req)?.startsWith("https://")) {
+    response.headers.set("Strict-Transport-Security", "max-age=31536000");
+  }
+  if (req.nextUrl.pathname.startsWith("/api/")) {
+    response.headers.set("Cache-Control", "no-store, max-age=0");
+    response.headers.set("Pragma", "no-cache");
+    response.headers.append("Vary", "Cookie");
+    // Uploaded SVG/HTML must never execute same-origin scripts when opened.
+    response.headers.set("Content-Security-Policy", "sandbox; default-src 'none'; style-src 'unsafe-inline'");
   }
   return response;
 }
@@ -45,12 +49,19 @@ function noIndex(response: NextResponse) {
   return response;
 }
 
-export function proxy(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const hasSession = Boolean(req.cookies.get(AUTH_COOKIE_NAME)?.value);
+  if (isSensitivePath(pathname)) return withSecurityHeaders(new NextResponse(null, { status: 404 }), req);
+  const unsafe = unsafeRequestReason(req);
+  if (unsafe) return withSecurityHeaders(NextResponse.json({ error: unsafe }, { status: 403 }), req);
+  let hasSession = Boolean(req.cookies.get(AUTH_COOKIE_NAME)?.value);
   const isProtectedPage = PROTECTED_PAGE_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 
   if (isProtectedPage) {
+    if (hasSession) {
+      const { getSessionUser } = await import("@/lib/auth");
+      hasSession = Boolean(await getSessionUser(req));
+    }
     if (!hasSession) {
       const url = req.nextUrl.clone();
       const requestedPath = `${pathname}${req.nextUrl.search}`;
@@ -84,7 +95,7 @@ export function proxy(req: NextRequest) {
     }
   }
 
-  if (pathname.startsWith("/api/") && !PUBLIC_API_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
+  if (pathname.startsWith("/api/") && !PUBLIC_APIS.has(pathname)) {
     if (!hasSession) {
       const response = NextResponse.json({ error: "未登录" }, { status: 401 });
       response.headers.set("Cache-Control", "no-store, max-age=0");
@@ -93,11 +104,25 @@ export function proxy(req: NextRequest) {
     }
   }
 
-  const response = withSecurityHeaders(NextResponse.next(), req);
-  if (isProtectedPage) noIndex(response);
+  const requestHeaders = new Headers(req.headers);
+  const origin = new URL(trustedRequestOrigin(req)!);
+  requestHeaders.set("x-forwarded-host", origin.host);
+  requestHeaders.set("x-forwarded-proto", origin.protocol.slice(0, -1));
+  if (process.env.LUMA_TRUST_PROXY !== "1") {
+    requestHeaders.delete("x-forwarded-for");
+    requestHeaders.delete("x-real-ip");
+    requestHeaders.delete("forwarded");
+  }
+  const response = withSecurityHeaders(NextResponse.next({ request: { headers: requestHeaders } }), req);
+  if (isProtectedPage) {
+    noIndex(response);
+    response.headers.set("Cache-Control", "private, no-store, max-age=0");
+  }
   return response;
 }
 
 export const config = {
-  matcher: ["/((?!api/quick-cut/tasks/[^/]+/assets(?:/|$)|_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico)$).*)"],
+  // Large quick-cut streams enforce the same origin/auth checks in the handler;
+  // excluding only this exact route avoids buffering multi-GB videos in Proxy.
+  matcher: ["/((?!api/quick-cut/tasks/[^/]+/assets/?$).*)"],
 };

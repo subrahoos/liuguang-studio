@@ -9,6 +9,7 @@ import { boardFilePath } from "@/lib/board-workflows";
 import { storagePaths } from "@/lib/storage-root";
 import { resolveOwnedStoredProjectFile } from "@/lib/project-local-archive";
 import { IMAGE_REFERENCE_TARGET_BYTES } from "@/lib/image-generation-policy";
+import { ADMIN_USER_ID } from "@/lib/auth-constants";
 
 const execFileAsync = promisify(execFile);
 
@@ -49,6 +50,7 @@ async function resolveLocalImageApiPath(url: string, ownerId?: string): Promise<
 
   const modelMatch = pathOnly.match(/^\/api\/model-identity\/([^/?#]+)/);
   if (modelMatch) {
+    if (ownerId !== ADMIN_USER_ID) throw new Error("无权读取该人物参考图。");
     const fileName = MODEL_IDENTITY_FILES[decodeURIComponent(modelMatch[1])];
     return fileName ? join(MODEL_IDENTITY_PACK_DIR, fileName) : null;
   }

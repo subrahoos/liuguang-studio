@@ -119,7 +119,7 @@ function persistStore(storageKey: string, store: HomeBackgroundStore) {
 export function useHomeBackgroundSettings() {
   const [store, setStore] = useState<HomeBackgroundStore>(defaultStore);
   const [isReady, setIsReady] = useState(false);
-  const [storageKey, setStorageKey] = useState(scopedBackgroundKey(ADMIN_BACKGROUND_ACCOUNT_ID));
+  const [storageKey, setStorageKey] = useState(scopedBackgroundKey("anonymous"));
   const [message, setMessage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -133,19 +133,18 @@ export function useHomeBackgroundSettings() {
         const res = await fetch("/api/auth/me", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
-          return scopedBackgroundKey(data.user?.accountId || ADMIN_BACKGROUND_ACCOUNT_ID);
+          return scopedBackgroundKey(data.user?.accountId || "anonymous");
         }
       } catch {
-        // Public pages use the admin background before login.
+        // Public pages use defaults, never another account's saved media.
       }
-      return scopedBackgroundKey(ADMIN_BACKGROUND_ACCOUNT_ID);
+      return scopedBackgroundKey("anonymous");
     }
 
     function readSavedStore(nextKey: string) {
-      const saved = window.localStorage.getItem(nextKey)
-        || (nextKey === scopedBackgroundKey(ADMIN_BACKGROUND_ACCOUNT_ID) ? window.localStorage.getItem(HOME_BACKGROUND_KEY) : null)
-        || window.localStorage.getItem(scopedBackgroundKey(ADMIN_BACKGROUND_ACCOUNT_ID))
-        || window.localStorage.getItem(HOME_BACKGROUND_KEY);
+      const saved = nextKey === scopedBackgroundKey("anonymous") ? null
+        : window.localStorage.getItem(nextKey)
+          || (nextKey === scopedBackgroundKey(ADMIN_BACKGROUND_ACCOUNT_ID) ? window.localStorage.getItem(HOME_BACKGROUND_KEY) : null);
       let nextStore = defaultStore;
       try {
         if (saved) nextStore = normalizeStore(JSON.parse(saved));

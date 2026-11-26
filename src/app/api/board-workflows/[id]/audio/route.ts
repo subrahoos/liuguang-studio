@@ -4,6 +4,8 @@ import { basename, extname, join } from "path";
 import { Readable } from "stream";
 import { NextRequest, NextResponse } from "next/server";
 import { getOwnedBoardWorkflowAccess } from "@/lib/server/resource-access";
+import type { AuthUser } from "@/lib/auth";
+import { authorizeLocalVideoPath } from "@/lib/server/local-file-access";
 import {
   boardFilePublicUrl,
   boardArtifactFileName,
@@ -50,14 +52,6 @@ type PreparedAudioSource = {
   sourceBytes?: number;
   storageReused?: boolean;
 };
-
-function validateLocalVideoPath(value: string) {
-  const cleaned = value.trim().replace(/^"|"$/g, "");
-  const extension = extname(cleaned).toLowerCase();
-  if (!ALLOWED_VIDEO_EXTENSIONS.has(extension)) throw new Error("只支持 mp4、webm、mov、m4v 视频。");
-  if (!existsSync(cleaned)) throw new Error(`找不到本地视频：${cleaned}`);
-  return cleaned;
-}
 
 async function readAudioExtractionRequest(req: NextRequest): Promise<AudioExtractionRequest> {
   if (req.headers.get("content-type")?.includes("multipart/form-data")) {
@@ -107,6 +101,7 @@ async function prepareAudioSource(
   id: string,
   workflow: BoardWorkflow,
   request: AudioExtractionRequest,
+  user: AuthUser,
 ): Promise<PreparedAudioSource> {
   const reusableFilePaths = [
     workflow.sourceVideoPath,
@@ -142,7 +137,7 @@ async function prepareAudioSource(
     return storeCurrentVideo(request.sourceVideoFile.stream(), request.sourceVideoFile.name, extension);
   }
   if (request.sourceVideoPath) {
-    const filePath = validateLocalVideoPath(request.sourceVideoPath);
+    const filePath = await authorizeLocalVideoPath(request.sourceVideoPath, user, workflow.localDir);
     return storeCurrentVideo(
       Readable.toWeb(createReadStream(filePath)) as ReadableStream<Uint8Array>,
       basename(filePath),
@@ -249,7 +244,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     clientTaskId = request.clientTaskId;
     if (!executorNodeId) return NextResponse.json({ error: "缺少执行节点" }, { status: 400 });
 
-    const source = await prepareAudioSource(id, workflow, request);
+    const source = await prepareAudioSource(id, workflow, request, access.user);
     createdSourcePaths = source.createdFilePaths;
     const meta = await probeBoardVideo(source.filePath);
     const registration = await registerCurrentReferenceVideo(id, workflow, executorNodeId, source, meta);

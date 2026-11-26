@@ -46,6 +46,16 @@ export type RecordModelApiCallInput = ModelApiAuditContext & {
 const MAX_TEXT_LENGTH = 240;
 const MAX_ID_LENGTH = 180;
 
+/** Knowledge of a provider task ID must not grant access to another user's result. */
+export async function ownsModelApiTask(userId: string, channelId: string, providerKey: string, taskId: string) {
+  const row = await getDb().select({ id: modelApiCalls.id }).from(modelApiCalls).where(and(
+    eq(modelApiCalls.userId, userId), eq(modelApiCalls.channelId, channelId),
+    eq(modelApiCalls.providerKey, providerKey), eq(modelApiCalls.remoteTaskId, taskId),
+    eq(modelApiCalls.callType, "video"),
+  )).limit(1);
+  return row.length > 0;
+}
+
 function boundedText(value: unknown, maxLength = MAX_TEXT_LENGTH) {
   return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
 }

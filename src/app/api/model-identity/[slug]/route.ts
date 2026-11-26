@@ -2,7 +2,7 @@ import { legacyIdentityReferenceRoot } from "@/lib/runtime-tools";
 import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "fs/promises";
 import { join } from "path";
-import { handleAuthRouteError, requireUser } from "@/lib/auth";
+import { handleAuthRouteError, requireAdmin } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
@@ -20,7 +20,7 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    await requireUser(req);
+    await requireAdmin(req);
     const { slug } = await params;
     const fileName = IDENTITY_FILES[slug];
 

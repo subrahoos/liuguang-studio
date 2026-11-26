@@ -23,7 +23,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ file
     return new NextResponse(buffer, {
       headers: {
         "Content-Type": mimeFromName(target),
-        "Cache-Control": "private, max-age=31536000, immutable",
+        "Cache-Control": "private, no-store, max-age=0",
       },
     });
   } catch (error) {

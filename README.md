@@ -20,7 +20,19 @@
 powershell -ExecutionPolicy Bypass -File .\scripts\install-windows.ps1 -Port 3200 -DataRoot E:\LiuguangData -ProxyUrl http://127.0.0.1:7890
 ```
 
-服务默认只监听本机 `127.0.0.1`。本地 HTTP 使用非 Secure 会话 Cookie；如自行配置公网 HTTPS，须在本机 `.local/config.json` 开启 `secureCookies` 并自行配置访问入口。
+服务默认只监听本机 `127.0.0.1`。本地 HTTP 使用非 Secure 会话 Cookie；如自行配置公网 HTTPS，须在本机 `.local/config.json` 配置精确 `publicOrigins` 并开启 `secureCookies`。安全边界、管理员桌面操作限制及反代示例见 [本地部署安全](deployment/SECURITY.md)。
+
+## 已安装电脑更新
+
+先停止这台电脑正在运行的服务，在项目目录执行：
+
+```powershell
+git pull --ff-only origin main
+```
+
+然后重新运行 `安装.cmd` 完成权限加固和生产构建，再运行 `启动.cmd`。安装会保留现有数据库、密码、Key 和本机配置。若 Git 提示本机有未提交修改，先保留并提交这些修改，再合并更新，不要强制覆盖。
+
+2026-11-26 的安全更新包含账户文件/任务隔离、登录限流、跨站请求与可信 Host 校验、私有响应缓存及 Windows 目录权限加固。新电脑应获取 **main 分支最新源码**；`windows-runtime-20261126` Release 继续提供完整模型和环境分卷，其自动生成的历史 Source code ZIP 不等于最新源码。模型分卷无需重新发布。
 
 ## 手动或离线安装
 

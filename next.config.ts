@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
+  productionBrowserSourceMaps: false,
   // Keep the native SQLite binding in Node's server runtime. Bundling it into
   // Turbopack route chunks can leave authenticated pages with a missing
   // external module after a concurrent rebuild.

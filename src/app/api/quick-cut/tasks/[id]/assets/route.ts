@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleAuthRouteError, requireUser } from "@/lib/auth";
 import { clearQuickCutOptionalAssets, storeQuickCutAssetStream, toPublicQuickCutTask, type QuickCutAssetKind } from "@/lib/quick-cut";
+import { unsafeRequestReason } from "@/lib/request-security";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,10 +16,17 @@ function withSecurityHeaders(response: NextResponse) {
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
+  response.headers.set("Cross-Origin-Resource-Policy", "same-origin");
+  response.headers.set("Cache-Control", "no-store, max-age=0");
+  response.headers.set("Pragma", "no-cache");
+  response.headers.append("Vary", "Cookie");
+  response.headers.set("Content-Security-Policy", "sandbox; default-src 'none'; style-src 'unsafe-inline'");
   return response;
 }
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const unsafe = unsafeRequestReason(req);
+  if (unsafe) return withSecurityHeaders(NextResponse.json({ error: unsafe }, { status: 403 }));
   try {
     const user = await requireUser(req);
     const { id } = await params;
@@ -39,6 +47,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const unsafe = unsafeRequestReason(req);
+  if (unsafe) return withSecurityHeaders(NextResponse.json({ error: unsafe }, { status: 403 }));
   try {
     const user = await requireUser(req);
     const { id } = await params;

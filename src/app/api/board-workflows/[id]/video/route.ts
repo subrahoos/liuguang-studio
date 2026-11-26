@@ -1,4 +1,6 @@
 import { getOwnedBoardWorkflowAccess } from "@/lib/server/resource-access";
+import type { AuthUser } from "@/lib/auth";
+import { authorizeLocalVideoPath } from "@/lib/server/local-file-access";
 import { createReadStream, existsSync } from "fs";
 import { mkdir, readdir, rm } from "fs/promises";
 import { basename, extname, join } from "path";
@@ -80,14 +82,6 @@ function trimVideoFilter(durationSeconds: number, nextFilter: string) {
   return `trim=start=0:end=${durationSeconds.toFixed(3)},setpts=PTS-STARTPTS,${nextFilter}`;
 }
 
-function validateLocalVideoPath(value: string) {
-  const cleaned = value.trim().replace(/^"|"$/g, "");
-  const ext = extname(cleaned).toLowerCase();
-  if (!ALLOWED_EXTENSIONS.has(ext)) throw new Error("只支持 mp4、webm、mov、m4v 视频。");
-  if (!existsSync(cleaned)) throw new Error(`找不到本地视频：${cleaned}`);
-  return cleaned;
-}
-
 async function detectSceneCutTimes(videoPath: string, threshold: number) {
   try {
     const { stderr } = await execFileAsync(boardMediaTool("ffmpeg"), [
@@ -106,7 +100,7 @@ async function detectSceneCutTimes(videoPath: string, threshold: number) {
   }
 }
 
-async function prepareVideo(req: NextRequest, id: string, workflow: BoardWorkflow): Promise<PreparedVideo> {
+async function prepareVideo(req: NextRequest, id: string, workflow: BoardWorkflow, user: AuthUser): Promise<PreparedVideo> {
   const form = await req.formData();
   const file = form.get("sourceVideoFile");
   const localPath = String(form.get("sourceVideoPath") || "").trim();
@@ -149,7 +143,7 @@ async function prepareVideo(req: NextRequest, id: string, workflow: BoardWorkflo
   }
 
   if (localPath) {
-    const validated = validateLocalVideoPath(localPath);
+    const validated = await authorizeLocalVideoPath(localPath, user, workflow.localDir);
     return saveSourceVideo(
       Readable.toWeb(createReadStream(validated)) as ReadableStream<Uint8Array>,
       basename(validated),
@@ -286,7 +280,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     const workflow = access.workflow;
     if (!workflow) return NextResponse.json({ error: "画板工作流不存在" }, { status: 404 });
 
-    const prepared = await prepareVideo(req, id, workflow);
+    const prepared = await prepareVideo(req, id, workflow, access.user);
     executorNodeId = prepared.executorNodeId;
     clientTaskId = prepared.clientTaskId;
     createdFilePaths = prepared.createdFilePaths;

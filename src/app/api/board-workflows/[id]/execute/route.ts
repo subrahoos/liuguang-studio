@@ -1,5 +1,6 @@
 import { getOwnedBoardWorkflowAccess } from "@/lib/server/resource-access";
 import { NextRequest, NextResponse } from "next/server";
+import { internalAppOrigin } from "@/lib/request-security";
 import { appendFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 
@@ -87,7 +88,7 @@ export async function POST(req: NextRequest, { params }: Params) {
         controlRole: controlRoleOf(node),
         route,
       });
-      const res = await fetch(new URL(route, req.nextUrl.origin), {
+      const res = await fetch(new URL(route, internalAppOrigin()), {
         method: "POST",
         headers: { Cookie: req.headers.get("cookie") || "" },
         body: form,
@@ -117,7 +118,7 @@ export async function POST(req: NextRequest, { params }: Params) {
       route,
       payloadKeys: Object.keys(payload),
     });
-    const res = await fetch(new URL(route, req.nextUrl.origin), {
+    const res = await fetch(new URL(route, internalAppOrigin()), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

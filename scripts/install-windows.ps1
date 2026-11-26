@@ -15,6 +15,8 @@ if (-not $DataRoot) { $DataRoot = if ($oldConfig) { $oldConfig.dataRoot } else {
 if ($oldConfig -and -not $PSBoundParameters.ContainsKey('Port')) { $Port = $oldConfig.port }
 if ($oldConfig -and -not $PSBoundParameters.ContainsKey('ProxyUrl')) { $ProxyUrl = $oldConfig.proxyUrl }
 $DataRoot = [IO.Path]::GetFullPath($DataRoot)
+New-Item -ItemType Directory -Path $DataRoot -Force | Out-Null
+& (Join-Path $PSScriptRoot 'protect-windows-paths.ps1') -Paths @($projectRoot, $DataRoot)
 $runtimeRoot = Join-Path $projectRoot '.runtime'
 $env:LUMA_DATA_ROOT = $DataRoot
 $env:LUMA_RUNTIME_ROOT = $runtimeRoot
@@ -131,6 +133,11 @@ try {
   Write-Host 'Building the complete application (Webpack)...'
   Invoke-Checked $node @('node_modules/next/dist/bin/next','build','--webpack')
   $config = @{ dataRoot=$DataRoot; runtimeRoot=$runtimeRoot; port=$Port; secureCookies=$false; proxyUrl=$ProxyUrl }
+  if ($oldConfig) {
+    $config.secureCookies = [bool]$oldConfig.secureCookies
+    if ($oldConfig.publicOrigins) { $config.publicOrigins = $oldConfig.publicOrigins }
+    if ($oldConfig.trustProxy) { $config.trustProxy = [bool]$oldConfig.trustProxy }
+  }
   [IO.File]::WriteAllText($configFile, ($config | ConvertTo-Json), [Text.UTF8Encoding]::new($false))
 } finally {
   Pop-Location

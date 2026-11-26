@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handleAuthRouteError, requireUser } from "@/lib/auth";
+import { handleAuthRouteError } from "@/lib/auth";
+import { requireHostDesktopAdmin } from "@/lib/server/host-desktop-access";
 import { selectQuickCutProcessingOutputFolder, toPublicQuickCutTask } from "@/lib/quick-cut";
 
 export const runtime = "nodejs";
@@ -7,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const user = await requireUser(req);
+    const user = await requireHostDesktopAdmin(req);
     const { id } = await params;
     const task = await selectQuickCutProcessingOutputFolder(user.id, id);
     return NextResponse.json({ cancelled: !task, task: task ? await toPublicQuickCutTask(task) : null });

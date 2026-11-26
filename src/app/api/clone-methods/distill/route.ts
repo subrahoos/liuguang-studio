@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { internalAppOrigin } from "@/lib/request-security";
 import { CloneMethod } from "@/lib/clone-methods";
 import { buildCloneMethodDistillationPrompt } from "@/lib/clone-method-prompts";
 import { extractLongJsonError, postJsonWithLongTimeout } from "@/lib/server/long-json-request";
@@ -173,7 +174,7 @@ export async function POST(req: NextRequest) {
         form,
         llm,
         analysisJson: providedAnalysisJson,
-        origin: req.nextUrl.origin,
+        origin: internalAppOrigin(),
         cookie,
       });
     }
@@ -188,7 +189,7 @@ export async function POST(req: NextRequest) {
     analysisForm.append("model", llm.model);
     if (llm.visionModel) analysisForm.append("visionModel", llm.visionModel);
 
-    const analysisRes = await fetch(new URL("/api/clone/analyze-video", req.nextUrl.origin), {
+    const analysisRes = await fetch(new URL("/api/clone/analyze-video", internalAppOrigin()), {
       method: "POST",
       headers: cookie ? { Cookie: cookie } : undefined,
       body: analysisForm,
@@ -248,7 +249,7 @@ export async function POST(req: NextRequest) {
       updatedAt: now,
     };
 
-    const saveRes = await fetch(new URL("/api/clone-methods", req.nextUrl.origin), {
+    const saveRes = await fetch(new URL("/api/clone-methods", internalAppOrigin()), {
       method: "POST",
       headers: { "Content-Type": "application/json", ...(cookie ? { Cookie: cookie } : {}) },
       body: JSON.stringify(method),
